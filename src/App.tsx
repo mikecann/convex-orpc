@@ -18,10 +18,10 @@ export default function App() {
 
 function Content() {
   const { viewer, numbers } =
-    useQuery(api.myFunctions2.listNumbersNoAuth, {
+    useQuery(api.myFunctions4.listNumbersSimple, {
       count: 10,
     }) ?? {};
-  const addNumber = useMutation(api.myFunctions2.addNumber);
+  const addNumber = useMutation(api.myFunctions4.addNumber);
 
   if (viewer === undefined || numbers === undefined) {
     return (

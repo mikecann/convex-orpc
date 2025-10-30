@@ -34,20 +34,19 @@ const convexQueryMiddleware = os
   });
 
 // Public procedure with input validation
-export const listPlanet = os
+export const listNumbers = os
   .use(convexQueryMiddleware)
   .use(authMiddleware)
   .input(
     z.object({
-      limit: z.number().int().min(1).max(100).optional(),
-      cursor: z.number().int().min(0).default(0),
+      count: z.number(),
     }),
   )
   .handler(async ({ context, input }) => {
+    const numbers = await context.db
+      .query("numbers")
+      .order("desc")
+      .take(input.count);
 
-    console.log("CONVEX DB", context.db);
-    
-    console.log(context.user);
-    // Fetch planets with pagination
-    return [{ id: 1, name: "Earth" }];
-  })
+    return numbers.reverse().map((number) => number.value);
+  });
