@@ -1,40 +1,45 @@
-# Welcome to your Convex + React (Vite) app
+# Convex more like oRPC
 
-This is a [Convex](https://convex.dev/) project created with [`npm create convex`](https://www.npmjs.com/package/create-convex).
+I nerd-sniped myself into experimenting with this to see what the Convex API would look like but written in a more fluent way like oRPC. 
 
-After the initial setup (<2 minutes) you'll have a working full-stack app using:
+Borrowed heavily from: https://orpc.unnoq.com/learn-and-contribute/overview and helped out by AI.
 
-- Convex as your backend (database, server logic)
-- [React](https://react.dev/) as your frontend (web page interactivity)
-- [Vite](https://vitest.dev/) for optimized web hosting
-- [Tailwind](https://tailwindcss.com/) for building great looking accessible UI
+```ts
 
-## Get started
+// A middleware that checks if the user is authenticated
+const authMiddleware = cvx.query().middleware(async ({ context, next }) => {
+  const identity = await context.auth.getUserIdentity();
+  if (!identity) {
+    throw new Error("Unauthorized");
+  }
 
-If you just cloned this codebase and didn't use `npm create convex`, run:
+  return next({
+    context: {
+      ...context,
+      user: {
+        id: identity.subject,
+        name: identity.name ?? "Unknown",
+      },
+    },
+  });
+});
 
+// A query that requires authentication
+export const listNumbersAuth = cvx
+  .query()
+  .use(authMiddleware)
+  .args({ count: v.number() })
+  .handler(async (ctx, args) => {
+    const numbers = await ctx.db
+      .query("numbers")
+      .order("desc")
+      .take(args.count);
+
+    return {
+      viewer: ctx.user.name, // user is available from middleware!
+      numbers: numbers.reverse().map((number) => number.value),
+    };
+  });
 ```
-npm install
-npm run dev
-```
 
-If you're reading this README on GitHub and want to use this template, run:
-
-```
-npm create convex@latest -- -t react-vite
-```
-
-## Learn more
-
-To learn more about developing your project with Convex, check out:
-
-- The [Tour of Convex](https://docs.convex.dev/get-started) for a thorough introduction to Convex principles.
-- The rest of [Convex docs](https://docs.convex.dev/) to learn about all Convex features.
-- [Stack](https://stack.convex.dev/) for in-depth articles on advanced topics.
-
-## Join the community
-
-Join thousands of developers building full-stack apps with Convex:
-
-- Join the [Convex Discord community](https://convex.dev/community) to get help in real-time.
-- Follow [Convex on GitHub](https://github.com/get-convex/), star and contribute to the open-source implementation of Convex.
+Checkout /convex/myFunctions.ts for more examples

@@ -17,7 +17,7 @@ export const listNumbersSimple = cvx
     };
   });
 
-// Define reusable authentication middleware using the oRPC pattern
+// A middleware that checks if the user is authenticated
 const authMiddleware = cvx.query().middleware(async ({ context, next }) => {
   const identity = await context.auth.getUserIdentity();
   if (!identity) {
@@ -35,7 +35,7 @@ const authMiddleware = cvx.query().middleware(async ({ context, next }) => {
   });
 });
 
-// Now we can use it directly without calling it!
+// A query that requires authentication
 export const listNumbersAuth = cvx
   .query()
   .use(authMiddleware)
