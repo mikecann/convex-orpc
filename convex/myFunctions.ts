@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { cvx } from "./lib3/convex_builder";
+import { z } from "zod";
 
 // Example: Simple query without middleware
 export const listNumbersSimple = cvx
@@ -15,6 +16,51 @@ export const listNumbersSimple = cvx
       numbers: numbers.reverse().map((number) => number.value),
     };
   });
+
+export const listNumbersSimpleWithConvexValidators = cvx
+  .query()
+  .input(v.object({ count: v.number() }))
+  .returns(v.object({ numbers: v.array(v.number()) }))
+  .handler(async ({ context, input }) => {
+    const numbers = await context.db
+      .query("numbers")
+      .order("desc")
+      .take(input.count);
+
+    return {
+      numbers: numbers.reverse().map((number) => number.value),
+    };
+  });
+
+export const listNumbersSimpleWithZod = cvx
+  .query()
+  .input(z.object({ count: z.number() }))
+  .returns(z.object({ numbers: z.array(z.number()) }))
+  .handler(async ({ context, input }) => {
+    const numbers = await context.db
+      .query("numbers")
+      .order("desc")
+      .take(input.count);
+
+    return {
+      numbers: numbers.reverse().map((number) => number.value),
+    };
+  });
+
+// export const listNumbersSimpleWithZodInvalid = cvx
+//   .query()
+//   .input(z.number())
+//   .returns(z.object({ numbers: z.array(z.number()) }))
+//   .handler(async ({ context, input }) => {
+//     const numbers = await context.db
+//       .query("numbers")
+//       .order("desc")
+//       .take(input.count);
+
+//     return {
+//       numbers: numbers.reverse().map((number) => number.value),
+//     };
+//   });
 
 // A middleware that checks if the user is authenticated
 const authMiddleware = cvx.query().middleware(async ({ context, next }) => {
@@ -59,6 +105,7 @@ export const addNumber = cvx
   .returns(v.id("numbers"))
   .handler(async ({ context, input }) => {
     console.log(`User ${context.user.name} is adding ${input.value}`);
+
     return await context.db.insert("numbers", { value: input.value });
   });
 
@@ -97,6 +144,7 @@ export const internalListAll = cvx
   .input({})
   .handler(async ({ context }) => {
     const numbers = await context.db.query("numbers").collect();
+
     return numbers;
   });
 

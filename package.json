@@ -18,9 +18,10 @@
     "@orpc/shared": "^1.10.2",
     "@standard-schema/spec": "^1.0.0",
     "convex": "^1.28.0",
+    "convex-helpers": "^0.1.104",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "zod": "^4.1.12"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@convex-dev/eslint-plugin": "^1.0.0",

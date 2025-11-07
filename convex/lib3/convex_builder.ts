@@ -26,6 +26,14 @@ import type {
   MutationCtx,
   ActionCtx,
 } from "./convex_types";
+import type { z } from "zod";
+import {
+  isZodSchema,
+  toConvexValidator,
+  type ValidatorInput,
+  type ReturnsValidatorInput,
+  type InferZodType,
+} from "./zod_support";
 
 interface ConvexBuilderDef<
   TFunctionType extends FunctionType | undefined,
@@ -184,41 +192,51 @@ export class ConvexBuilder<
   }
 
   /**
-   * Sets the input validation schema (Convex args validators).
+   * Sets the input validation schema (Convex validators or Zod schema).
    */
-  input<UArgsValidator extends ConvexArgsValidator>(
-    validator: UArgsValidator,
+  input<UInput extends ValidatorInput>(
+    validator: UInput,
   ): ConvexBuilder<
     TFunctionType,
     TInitialContext,
     TCurrentContext,
-    UArgsValidator,
+    ConvexArgsValidator,
     TReturnsValidator,
     TVisibility
   > {
+    // Convert Zod schema to Convex validator if needed
+    const convexValidator = isZodSchema(validator)
+      ? (toConvexValidator(validator) as ConvexArgsValidator)
+      : (validator as ConvexArgsValidator);
+
     return new ConvexBuilder({
       ...this.def,
-      argsValidator: validator,
-    });
+      argsValidator: convexValidator,
+    }) as any;
   }
 
   /**
-   * Sets the output validation schema (Convex returns validator).
+   * Sets the output validation schema (Convex validator or Zod schema).
    */
-  returns<UReturnsValidator extends ConvexReturnsValidator>(
-    validator: UReturnsValidator,
+  returns<UReturns extends ReturnsValidatorInput>(
+    validator: UReturns,
   ): ConvexBuilder<
     TFunctionType,
     TInitialContext,
     TCurrentContext,
     TArgsValidator,
-    UReturnsValidator,
+    ConvexReturnsValidator,
     TVisibility
   > {
+    // Convert Zod schema to Convex validator if needed
+    const convexValidator = isZodSchema(validator)
+      ? (toConvexValidator(validator) as ConvexReturnsValidator)
+      : (validator as ConvexReturnsValidator);
+
     return new ConvexBuilder({
       ...this.def,
-      returnsValidator: validator,
-    });
+      returnsValidator: convexValidator,
+    }) as any;
   }
 
   /**
