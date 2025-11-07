@@ -1,6 +1,6 @@
 {
   "name": "fluent-convex",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A fluent API builder for Convex functions with middleware support, inspired by oRPC",
   "type": "module",
   "main": "./dist/index.js",
