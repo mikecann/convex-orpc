@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { cvx } from "./lib3/builder";
+import { cvx } from "fluent-convex";
 import { z } from "zod";
 
 // Example: Simple query without middleware

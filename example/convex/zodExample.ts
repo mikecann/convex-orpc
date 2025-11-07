@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { cvx } from "./lib3/builder";
+import { cvx } from "fluent-convex";
 
 // Define Zod schemas
 const NumberInputSchema = z.object({

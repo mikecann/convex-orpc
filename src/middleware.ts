@@ -26,3 +26,4 @@ export interface ConvexMiddleware<
 }
 
 export type AnyConvexMiddleware = ConvexMiddleware<any, any>;
+

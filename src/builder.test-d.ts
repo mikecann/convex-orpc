@@ -2,7 +2,6 @@ import { describe, it, assertType } from "vitest";
 import { cvx } from "./builder";
 import { v } from "convex/values";
 import { z } from "zod";
-import type { Id } from "../_generated/dataModel";
 
 describe("ConvexBuilder Type Tests", () => {
   describe("input validation", () => {
@@ -10,7 +9,7 @@ describe("ConvexBuilder Type Tests", () => {
       cvx
         .query()
         .input({ count: v.number() })
-        .handler(async ({ context, input }) => {
+        .handler(async ({ input }) => {
           assertType<{ count: number }>(input);
           return { success: true };
         });
@@ -20,7 +19,7 @@ describe("ConvexBuilder Type Tests", () => {
       cvx
         .query()
         .input(v.object({ count: v.number() }))
-        .handler(async ({ context, input }) => {
+        .handler(async ({ input }) => {
           assertType<{ count: number }>(input);
           return { success: true };
         });
@@ -30,7 +29,7 @@ describe("ConvexBuilder Type Tests", () => {
       cvx
         .query()
         .input(z.object({ count: z.number() }))
-        .handler(async ({ context, input }) => {
+        .handler(async ({ input }) => {
           assertType<{ count: number }>(input);
           return { success: true };
         });
@@ -50,7 +49,7 @@ describe("ConvexBuilder Type Tests", () => {
       cvx
         .query()
         .input(z.object({ count: z.number() }).refine((data) => data.count > 0))
-        .handler(async ({ context, input }) => {
+        .handler(async ({ input }) => {
           assertType<{ count: number }>(input);
           return { success: true };
         });
@@ -63,7 +62,7 @@ describe("ConvexBuilder Type Tests", () => {
         .query()
         .input({ count: v.number() })
         .returns(v.object({ numbers: v.array(v.number()) }))
-        .handler(async ({ context, input }) => {
+        .handler(async () => {
           return { numbers: [1, 2, 3] };
         });
     });
@@ -73,7 +72,7 @@ describe("ConvexBuilder Type Tests", () => {
         .query()
         .input({ count: v.number() })
         .returns(z.object({ numbers: z.array(z.number()) }))
-        .handler(async ({ context, input }) => {
+        .handler(async () => {
           return { numbers: [1, 2, 3] };
         });
     });
@@ -83,7 +82,7 @@ describe("ConvexBuilder Type Tests", () => {
         .query()
         .input({ count: v.number() })
         .returns(z.number())
-        .handler(async ({ context, input }) => {
+        .handler(async () => {
           return 42;
         });
     });
@@ -106,7 +105,7 @@ describe("ConvexBuilder Type Tests", () => {
         .query()
         .use(authMiddleware)
         .input({ count: v.number() })
-        .handler(async ({ context, input }) => {
+        .handler(async ({ context }) => {
           // Context should have user property from middleware
           assertType<{ id: string; name: string }>(context.user);
 
@@ -146,7 +145,7 @@ describe("ConvexBuilder Type Tests", () => {
         .use(authMiddleware)
         .use(loggingMiddleware)
         .input({ count: v.number() })
-        .handler(async ({ context, input }) => {
+        .handler(async ({ context }) => {
           // Context should have both user and requestId
           assertType<{ id: string; name: string }>(context.user);
           assertType<string>(context.requestId);
@@ -160,9 +159,9 @@ describe("ConvexBuilder Type Tests", () => {
     it("should create queries", () => {
       cvx
         .query()
-        .input({ id: v.id("numbers") })
-        .handler(async ({ context, input }) => {
-          assertType<Id<"numbers">>(input.id);
+        .input({ id: v.string() })
+        .handler(async ({ input }) => {
+          assertType<string>(input.id);
           return { id: input.id };
         });
     });
@@ -171,7 +170,7 @@ describe("ConvexBuilder Type Tests", () => {
       cvx
         .mutation()
         .input({ name: v.string() })
-        .handler(async ({ context, input }) => {
+        .handler(async ({ input }) => {
           assertType<string>(input.name);
           return { name: input.name };
         });
@@ -181,7 +180,7 @@ describe("ConvexBuilder Type Tests", () => {
       cvx
         .action()
         .input({ url: v.string() })
-        .handler(async ({ context, input }) => {
+        .handler(async ({ input }) => {
           assertType<string>(input.url);
           return { url: input.url };
         });
@@ -191,9 +190,9 @@ describe("ConvexBuilder Type Tests", () => {
       cvx
         .query()
         .internal()
-        .input({ id: v.id("numbers") })
-        .handler(async ({ context, input }) => {
-          assertType<Id<"numbers">>(input.id);
+        .input({ id: v.string() })
+        .handler(async ({ input }) => {
+          assertType<string>(input.id);
           return { id: input.id };
         });
     });
@@ -201,7 +200,7 @@ describe("ConvexBuilder Type Tests", () => {
 
   describe("optional input", () => {
     it("should work without input validation", () => {
-      cvx.query().handler(async ({ context, input }) => {
+      cvx.query().handler(async ({ input }) => {
         assertType<Record<never, never>>(input);
         return { success: true };
       });
@@ -219,9 +218,9 @@ describe("ConvexBuilder Type Tests", () => {
               age: z.number(),
             }),
             tags: z.array(z.string()),
-          }),
+          })
         )
-        .handler(async ({ context, input }) => {
+        .handler(async ({ input }) => {
           assertType<string>(input.user.name);
           assertType<number>(input.user.age);
           assertType<string[]>(input.tags);
@@ -234,7 +233,7 @@ describe("ConvexBuilder Type Tests", () => {
       cvx
         .query()
         .input({ name: v.string(), age: v.optional(v.number()) })
-        .handler(async ({ context, input }) => {
+        .handler(async ({ input }) => {
           assertType<string>(input.name);
           assertType<number | undefined>(input.age);
 

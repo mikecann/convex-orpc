@@ -21,13 +21,11 @@ import type {
   MutationCtx,
   ActionCtx,
 } from "./types";
-import type { z } from "zod";
 import {
   isZodSchema,
   toConvexValidator,
   type ValidatorInput,
   type ReturnsValidatorInput,
-  type InferZodType,
 } from "./zod_support";
 
 interface ConvexBuilderDef<
@@ -378,3 +376,4 @@ export const cvx = new ConvexBuilder<
   middlewares: [],
   visibility: "public",
 });
+

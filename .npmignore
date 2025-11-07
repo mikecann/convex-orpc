@@ -1,0 +1,15 @@
+example
+node_modules
+*.log
+.DS_Store
+.env
+.env.local
+.convex
+coverage
+*.tsbuildinfo
+tsconfig.json
+vitest.config.ts
+src/**/*.test.ts
+src/**/*.test-d.ts
+.cursor
+
