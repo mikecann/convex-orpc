@@ -1,29 +1,32 @@
 # Publishing to npm
 
-This package is automatically published to npm via GitHub Actions when version tags are pushed.
+This package is automatically published to npm via GitHub Actions when version tags are pushed, using **npm Trusted Publishing** (no tokens required!).
 
-## One-Time Setup
+## One-Time Setup (Already Complete! ✅)
 
-### 1. Create an npm Account
+The initial setup has been completed:
 
-If you don't have one already, create an account at [npmjs.com](https://www.npmjs.com/).
+1. ✅ npm account created
+2. ✅ First manual publish done (v0.1.0)
+3. ⏳ Configure Trusted Publishing (do this next!)
 
-### 2. Generate an npm Token
+### Configure Trusted Publishing
 
-1. Log in to [npmjs.com](https://www.npmjs.com/)
-2. Go to your profile → Access Tokens
-3. Click "Generate New Token"
-4. Choose **"Automation"** type (for CI/CD)
-5. Copy the generated token
+To enable automatic publishing from GitHub Actions:
 
-### 3. Add Token to GitHub
+1. Go to [npmjs.com](https://www.npmjs.com/) and log in
+2. Navigate to your `fluent-convex` package page
+3. Click **Settings** → **Publishing Access**
+4. Under "Trusted publishers", click **"Add provider"**
+5. Fill in the form:
+   - **Provider:** GitHub Actions
+   - **Repository owner:** `mikeysee`
+   - **Repository name:** `fluent-convex`
+   - **Workflow filename:** `publish.yml`
+   - **Environment name:** (leave blank)
+6. Click **"Add"**
 
-1. Go to your GitHub repository
-2. Navigate to Settings → Secrets and variables → Actions
-3. Click "New repository secret"
-4. Name: `NPM_TOKEN`
-5. Value: Paste your npm token
-6. Click "Add secret"
+That's it! No secrets, no tokens needed. GitHub Actions will authenticate directly with npm using OIDC.
 
 ## Publishing a New Version
 
@@ -74,9 +77,9 @@ The package is published with [npm provenance](https://docs.npmjs.com/generating
 - A link back to the exact commit and workflow
 - A verification badge on the npm package page
 
-## Manual Publishing (Not Recommended)
+## Manual Publishing (Emergency Use Only)
 
-If you need to publish manually for some reason:
+If you need to publish manually (e.g., CI is down):
 
 ```bash
 # Ensure you're logged in
@@ -89,7 +92,7 @@ npm run build
 npm publish --access public
 ```
 
-Note: Manual publishing won't include provenance attestation.
+**Note:** Manual publishing won't include provenance attestation, which is a security feature that shows where the package was built.
 
 ## Troubleshooting
 
@@ -100,14 +103,21 @@ Log in to npmjs.com and verify your email address.
 ### "You do not have permission to publish"
 
 - Ensure you're logged in to the correct npm account
-- Check that the package name isn't already taken
-- Verify the `NPM_TOKEN` secret is correctly set in GitHub
+- Verify that Trusted Publishing is properly configured on npmjs.com
+- Check the repository owner and name match exactly
 
 ### "npm ERR! 403 Forbidden"
 
 - The package name might be taken
-- Your npm token might be expired or invalid
-- You might not have 2FA configured (required for publishing)
+- Trusted Publishing configuration might be incorrect
+- You might not have permissions on the npm package
+
+### GitHub Actions publish fails
+
+- Verify Trusted Publishing is configured on npmjs.com
+- Check that the workflow filename is exactly `publish.yml`
+- Ensure the `id-token: write` permission is set in the workflow
+- Look at the detailed error message in the GitHub Actions log
 
 ## CI/CD Workflows
 
