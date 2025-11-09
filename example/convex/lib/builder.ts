@@ -29,6 +29,8 @@ import {
   toConvexValidator,
   type ValidatorInput,
   type ReturnsValidatorInput,
+  type ToConvexArgsValidator,
+  type ToConvexReturnsValidator,
 } from "./zod_support";
 
 type InferredArgs<T extends ConvexArgsValidator | undefined> =
@@ -194,7 +196,7 @@ export class ConvexBuilder<
     TFunctionType,
     TInitialContext,
     TCurrentContext,
-    UInput extends ConvexArgsValidator ? UInput : ConvexArgsValidator,
+    ToConvexArgsValidator<UInput>,
     TReturnsValidator,
     TVisibility
   > {
@@ -216,7 +218,7 @@ export class ConvexBuilder<
     TInitialContext,
     TCurrentContext,
     TArgsValidator,
-    UReturns extends ConvexReturnsValidator ? UReturns : ConvexReturnsValidator,
+    ToConvexReturnsValidator<UReturns>,
     TVisibility
   > {
     const convexValidator = isZodSchema(validator)
