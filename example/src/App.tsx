@@ -1,5 +1,6 @@
 import { useMutation, useQuery } from "convex/react";
-import { api, internal } from "../convex/_generated/api";
+import { api } from "../convex/_generated/api";
+import { addNumberUnauth } from "../convex/myFunctions";
 
 export default function App() {
   return (
@@ -20,7 +21,7 @@ function Content() {
     useQuery(api.myFunctions.listNumbersSimple, {
       count: 10,
     }) ?? {};
-  const addNumber = useMutation(api.myFunctions.addNumber);
+  const addNumber = useMutation(api.myFunctions.addNumberUnauth);
 
   if (numbers === undefined) {
     return (

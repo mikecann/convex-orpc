@@ -24,6 +24,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --typecheck",
     "dev:test": "vitest --typecheck",
+    "example": "cd example && npm run",
     "prepublishOnly": "npm run build"
   },
   "keywords": [

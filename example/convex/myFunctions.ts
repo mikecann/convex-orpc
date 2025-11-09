@@ -17,6 +17,12 @@ export const listNumbersSimple = convex
     };
   });
 
+// export const doSomethingWithNumbers = convex.query().input({ count: v.number() }).handler(async ({ context, input }) => {
+//   const { numbers } = await listNumbersSimple({ context, input });
+
+//   return numbers.map(n => String(n)).join(", ");
+// });
+
 export const listNumbersSimpleWithConvexValidators = convex
   .query()
   .input(v.object({ count: v.number() }))
@@ -91,6 +97,14 @@ export const addNumber = convex
   .handler(async ({ context, input }) => {
     console.log(`User ${context.user.name} is adding ${input.value}`);
 
+    return await context.db.insert("numbers", { value: input.value });
+  });
+
+export const addNumberUnauth = convex
+  .mutation()
+  .input({ value: v.number() })
+  .returns(v.id("numbers"))
+  .handler(async ({ context, input }) => {
     return await context.db.insert("numbers", { value: input.value });
   });
 

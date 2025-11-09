@@ -8,6 +8,7 @@
     "dev:frontend": "vite --open",
     "dev:backend": "convex dev",
     "dev:ts": "tsc -b --noEmit -w",
+    "codegen": "convex codegen",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run --typecheck",
     "dev:test": "vitest --typecheck",
