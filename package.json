@@ -50,7 +50,6 @@
     "zod": "^3.0.0"
   },
   "dependencies": {
-    "@orpc/shared": "^1.10.2",
     "convex-helpers": "^0.1.104"
   },
   "devDependencies": {

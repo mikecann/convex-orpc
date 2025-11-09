@@ -19,8 +19,11 @@ npm install fluent-convex convex convex-helpers zod
 ## Quick Start
 
 ```ts
-import { convex } from "fluent-convex";
+import { createBuilder } from "fluent-convex";
 import { v } from "convex/values";
+import schema from "./schema";
+
+const convex = createBuilder(schema);
 
 // Simple query
 export const listNumbers = convex
@@ -74,7 +77,10 @@ export const listNumbersAuth = convex
 
 ```ts
 import { z } from "zod";
-import { convex } from "fluent-convex";
+import { createBuilder } from "fluent-convex";
+import schema from "./schema";
+
+const convex = createBuilder(schema);
 
 export const listNumbersWithZod = convex
   .query()

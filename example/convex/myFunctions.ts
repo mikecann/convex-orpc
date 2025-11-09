@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { z } from "zod";
-import { createBuilder } from "../../src/index";
+import { createBuilder } from "fluent-convex";
 import schema from "./schema";
 
 const convex = createBuilder(schema);

@@ -316,6 +316,168 @@ describe("ConvexBuilder Type Tests", () => {
         return { success: true };
       });
     });
+
+    it("should infer optional fields as T | undefined", () => {
+      convex
+        .mutation()
+        .input({
+          id: v.id("numbers"),
+          name: v.optional(v.string()),
+          value: v.optional(v.number()),
+        })
+        .handler(async ({ input }) => {
+          assertType<string>(input.id);
+          assertType<string | undefined>(input.name);
+          assertType<number | undefined>(input.value);
+          return null;
+        });
+    });
+
+    it("should handle many optional fields with complex types", () => {
+      convex
+        .mutation()
+        .input({
+          id: v.id("numbers"),
+          name: v.optional(v.string()),
+          count: v.optional(v.number()),
+          status: v.optional(v.union(v.string(), v.null())),
+          items: v.optional(
+            v.array(
+              v.object({
+                x: v.number(),
+                y: v.number(),
+              })
+            )
+          ),
+        })
+        .handler(async ({ input }) => {
+          assertType<string>(input.id);
+          assertType<string | undefined>(input.name);
+          assertType<number | undefined>(input.count);
+          assertType<string | null | undefined>(input.status);
+          assertType<Array<{ x: number; y: number }> | undefined>(input.items);
+          return null;
+        });
+    });
+
+    it("should allow all fields to be optional", () => {
+      convex
+        .query()
+        .input({
+          name: v.optional(v.string()),
+          minValue: v.optional(v.number()),
+          maxValue: v.optional(v.number()),
+        })
+        .handler(async ({ input }) => {
+          assertType<string | undefined>(input.name);
+          assertType<number | undefined>(input.minValue);
+          assertType<number | undefined>(input.maxValue);
+          return [];
+        });
+    });
+
+    it("should make all properties required but allow undefined for optional fields", () => {
+      convex
+        .mutation()
+        .input({
+          id: v.id("numbers"),
+          name: v.optional(v.string()),
+          value: v.optional(v.number()),
+        })
+        .handler(async ({ input }) => {
+          // All properties are present in the type
+          assertType<string>(input.id);
+          assertType<string | undefined>(input.name);
+          assertType<number | undefined>(input.value);
+
+          // Valid assignments with all properties
+          const testArgs1: typeof input = {
+            id: "123" as any,
+            name: undefined,
+            value: undefined,
+          };
+          const testArgs2: typeof input = {
+            id: "123" as any,
+            name: "test",
+            value: undefined,
+          };
+          const testArgs3: typeof input = {
+            id: "123" as any,
+            name: undefined,
+            value: 42,
+          };
+          const testArgs4: typeof input = {
+            id: "123" as any,
+            name: "test",
+            value: 42,
+          };
+
+          return { id: input.id };
+        });
+    });
+
+    it("should work with Partial for truly optional calling patterns", () => {
+      convex
+        .mutation()
+        .input({
+          id: v.id("numbers"),
+          name: v.optional(v.string()),
+          count: v.optional(v.number()),
+          status: v.optional(v.union(v.string(), v.null())),
+        })
+        .handler(async ({ input }) => {
+          // When calling, use Partial to make properties truly optional
+          type CallArgs = Partial<typeof input> & Pick<typeof input, "id">;
+
+          // Test various combinations are valid
+          const testArgs1: CallArgs = { id: "123" as any };
+          const testArgs2: CallArgs = { id: "123" as any, name: "test" };
+          const testArgs3: CallArgs = { id: "123" as any, count: 10 };
+          const testArgs4: CallArgs = { id: "123" as any, status: "active" };
+          const testArgs5: CallArgs = { id: "123" as any, status: null };
+          const testArgs6: CallArgs = {
+            id: "123" as any,
+            name: "test",
+            count: 10,
+          };
+          const testArgs7: CallArgs = {
+            id: "123" as any,
+            name: "test",
+            count: 10,
+            status: "active",
+          };
+
+          return null;
+        });
+    });
+
+    it("should allow empty object when all fields are optional", () => {
+      convex
+        .query()
+        .input({
+          name: v.optional(v.string()),
+          minValue: v.optional(v.number()),
+          maxValue: v.optional(v.number()),
+        })
+        .handler(async ({ input }) => {
+          // For calling, use Partial
+          type CallArgs = Partial<typeof input>;
+
+          // Test various combinations are valid
+          const testArgs1: CallArgs = {};
+          const testArgs2: CallArgs = { name: "test" };
+          const testArgs3: CallArgs = { minValue: 10 };
+          const testArgs4: CallArgs = { maxValue: 20 };
+          const testArgs5: CallArgs = { minValue: 10, maxValue: 20 };
+          const testArgs6: CallArgs = {
+            name: "test",
+            minValue: 10,
+            maxValue: 20,
+          };
+
+          return [];
+        });
+    });
   });
 
   describe("complex types", () => {

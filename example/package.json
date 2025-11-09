@@ -22,7 +22,8 @@
     "convex-helpers": "^0.1.104",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "fluent-convex": "file:../"
   },
   "devDependencies": {
     "@convex-dev/eslint-plugin": "^1.0.0",

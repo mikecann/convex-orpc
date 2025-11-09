@@ -1,5 +1,5 @@
 import { describe, it, assertType, expectTypeOf } from "vitest";
-import { createBuilder } from "../../src/index";
+import { createBuilder } from "fluent-convex";
 import { v } from "convex/values";
 import { z } from "zod";
 import schema from "./schema";
