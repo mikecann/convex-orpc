@@ -1,13 +1,7 @@
 import { v } from "convex/values";
 import { z } from "zod";
-import { createBuilder } from "fluent-convex";
-import schema from "./schema";
 import { convex } from "./lib";
-import {
-  addTimestamp,
-  authMiddleware,
-  authActionMiddleware,
-} from "./middleware";
+import { addTimestamp, authMiddleware } from "./middleware";
 
 // Example: Simple query without middleware
 export const listNumbersSimple = convex
@@ -230,7 +224,7 @@ export const addRandomNumber = convex
 
 export const addNumberAuthAction = convex
   .action()
-  .use(authActionMiddleware)
+  .use(authMiddleware)
   .input({ value: v.number() })
   .returns(
     v.object({

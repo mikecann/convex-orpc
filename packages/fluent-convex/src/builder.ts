@@ -91,9 +91,15 @@ export class ConvexBuilder<
     });
   }
 
+  middleware<UInContext extends Context, UOutContext extends Context>(
+    middleware: ConvexMiddleware<UInContext, UOutContext>
+  ): ConvexMiddleware<UInContext, UOutContext>;
   middleware<UOutContext extends Context>(
     middleware: ConvexMiddleware<TInitialContext, UOutContext>
-  ): ConvexMiddleware<TInitialContext, UOutContext> {
+  ): ConvexMiddleware<TInitialContext, UOutContext>;
+  middleware<UInContext extends Context, UOutContext extends Context>(
+    middleware: ConvexMiddleware<UInContext, UOutContext>
+  ): ConvexMiddleware<UInContext, UOutContext> {
     return middleware;
   }
 
