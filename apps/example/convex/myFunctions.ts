@@ -91,6 +91,17 @@ export const addNumber = convex
     return await context.db.insert("numbers", { value: input.value });
   });
 
+export const addNumberWithOptional = convex
+  .mutation()
+  .input({ value: v.number(), label: v.optional(v.string()) })
+  .returns(v.id("numbers"))
+  .handler(async ({ context, input }) => {
+    console.log(
+      `Adding ${input.value}${input.label ? ` with label "${input.label}"` : ""}`,
+    );
+    return await context.db.insert("numbers", { value: input.value });
+  });
+
 // Multiple middleware composition
 export const listNumbersWithTimestamp = convex
   .query()

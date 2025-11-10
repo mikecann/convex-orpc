@@ -29,6 +29,9 @@ function NumbersList() {
 
   // Testing PropertyValidators with optional fields
   const addNumber = useMutation(api.myFunctions.addNumber);
+  const addNumberWithOptional = useMutation(
+    api.myFunctions.addNumberWithOptional,
+  );
   const addWithMetadata = useMutation(api.myFunctions.addNumberWithMetadata);
 
   // Testing Zod validator with refinement
@@ -60,6 +63,16 @@ function NumbersList() {
           }}
         >
           Add Random (-50 to 50)
+        </button>
+
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-md"
+          onClick={() => {
+            void addNumberWithOptional({ value: 42 });
+            void addNumberWithOptional({ value: 66, label: "66" });
+          }}
+        >
+          Add Number With Optional
         </button>
 
         <button
