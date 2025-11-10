@@ -2,10 +2,11 @@ import { convexTest } from "convex-test";
 import { expect, test, describe } from "vitest";
 import { api, internal } from "./_generated/api";
 import schema from "./schema";
+import { modules } from "./test.setup";
 
 describe("Basic queries and mutations", () => {
   test("should add and list numbers with simple validators", async () => {
-    const t = convexTest(schema);
+    const t = convexTest(schema, modules);
     await t.mutation(api.myFunctions.addNumber, { value: 23 });
     await t.mutation(api.myFunctions.addNumber, { value: 42 });
 
@@ -16,7 +17,7 @@ describe("Basic queries and mutations", () => {
   });
 
   test("should work with v.object() validators", async () => {
-    const t = convexTest(schema);
+    const t = convexTest(schema, modules);
     await t.mutation(api.myFunctions.addNumber, { value: 100 });
 
     const { numbers } = await t.query(
@@ -27,7 +28,7 @@ describe("Basic queries and mutations", () => {
   });
 
   test("should work with Zod validators", async () => {
-    const t = convexTest(schema);
+    const t = convexTest(schema, modules);
     await t.mutation(api.myFunctions.addNumber, { value: 99 });
 
     const { numbers } = await t.query(
@@ -38,7 +39,7 @@ describe("Basic queries and mutations", () => {
   });
 
   test("should limit results based on count parameter", async () => {
-    const t = convexTest(schema);
+    const t = convexTest(schema, modules);
     await t.mutation(api.myFunctions.addNumber, { value: 1 });
     await t.mutation(api.myFunctions.addNumber, { value: 2 });
     await t.mutation(api.myFunctions.addNumber, { value: 3 });
@@ -52,7 +53,7 @@ describe("Basic queries and mutations", () => {
 
 describe("Middleware functionality", () => {
   test("should work with auth middleware", async () => {
-    const t = convexTest(schema);
+    const t = convexTest(schema, modules);
     const tWithAuth = t.withIdentity({
       subject: "user123",
       name: "Test User",
@@ -71,7 +72,7 @@ describe("Middleware functionality", () => {
   });
 
   test("should throw error without auth", async () => {
-    const t = convexTest(schema);
+    const t = convexTest(schema, modules);
 
     await expect(
       t.mutation(api.myFunctions.addNumberAuth, { value: 50 }),
@@ -79,7 +80,7 @@ describe("Middleware functionality", () => {
   });
 
   test("should work with multiple middleware composition", async () => {
-    const t = convexTest(schema);
+    const t = convexTest(schema, modules);
     const tWithAuth = t.withIdentity({
       subject: "user456",
       name: "Alice",
@@ -98,7 +99,7 @@ describe("Middleware functionality", () => {
   });
 
   test("should work with inline middleware", async () => {
-    const t = convexTest(schema);
+    const t = convexTest(schema, modules);
     await t.mutation(api.myFunctions.addNumber, { value: 55 });
 
     const result = await t.query(api.myFunctions.quickQuery, { limit: 3 });
@@ -108,7 +109,7 @@ describe("Middleware functionality", () => {
 
 describe("Internal functions", () => {
   test("should call internal query", async () => {
-    const t = convexTest(schema);
+    const t = convexTest(schema, modules);
     await t.mutation(api.myFunctions.addNumber, { value: 111 });
 
     const allNumbers = await t.query(internal.myFunctions.internalListAll, {});
@@ -120,7 +121,7 @@ describe("Internal functions", () => {
 
 describe("Return type validation", () => {
   test("should return validated response with Convex validators", async () => {
-    const t = convexTest(schema);
+    const t = convexTest(schema, modules);
     await t.mutation(api.myFunctions.addNumber, { value: 33 });
 
     const result = await t.query(
@@ -133,7 +134,7 @@ describe("Return type validation", () => {
   });
 
   test("should return validated response with Zod validators", async () => {
-    const t = convexTest(schema);
+    const t = convexTest(schema, modules);
     await t.mutation(api.myFunctions.addNumber, { value: 44 });
 
     const result = await t.query(api.myFunctions.listNumbersSimpleWithZod, {
@@ -145,7 +146,7 @@ describe("Return type validation", () => {
   });
 
   test("should return Id from mutation with returns validator", async () => {
-    const t = convexTest(schema);
+    const t = convexTest(schema, modules);
 
     const id = await t.mutation(api.myFunctions.addNumber, { value: 222 });
     expect(typeof id).toBe("string");
